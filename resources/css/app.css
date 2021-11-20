@@ -1,0 +1,27 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+.container {
+    @apply mx-auto
+}
+
+table.table {
+    @apply w-full
+}
+
+table.table th, table.table td {
+    @apply py-3 px-5 align-top text-left border-l border-t border-gray-300
+}
+
+table.table th:last-child, table.table td:last-child {
+    @apply border-r
+}
+
+table.table tbody tr:last-child {
+    @apply border-b border-gray-300
+}
+
+.error {
+    @apply text-red-500
+}
