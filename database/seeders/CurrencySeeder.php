@@ -20,9 +20,9 @@ class CurrencySeeder extends Seeder
         // 'NEO',
         // 'EOS',
         // 'BNT',
-        'BCH',
+        // 'BCH',
         'USDT',
-        'TUSD',
+        // 'TUSD',
         // 'USDC'
     ];
 

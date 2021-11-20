@@ -61,13 +61,7 @@ class DijkstraFinder extends BaseFinder
         }
 
         $path = $this->bestPath();
-        if($path->last() !== $currencyIn && !empty($this->orderBooks[$ticker][$currencyOut]) && $this->orderBooks[$ticker][$currencyOut]->canExchange()) {
-            $path->add($currencyOut);
-        }
-
-        if($path->count() === 1) {
-            $path->shift();
-        }
+        $path->add($currencyOut);
 
         return $path->values();
     }
