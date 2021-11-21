@@ -108,14 +108,18 @@ class ExchangeService implements ExchangeContract
         $pathFinder = new $classPathFinder;
 
         while($this->amount > 0) {
-            $bestPath = $pathFinder->setOrderBooks($this->orderBooks)
-                ->run($this->currencyIn, $this->currencyOut);
+            try {
+                $bestPath = $pathFinder->setOrderBooks($this->orderBooks)
+                    ->run($this->currencyIn, $this->currencyOut);
 
-            if($bestPath->isEmpty()) {
+                if($bestPath->isEmpty()) {
+                    break;
+                }
+
+                $result->add($this->createExchangeResult($bestPath));
+            } catch (\Exception $e) {
                 break;
             }
-
-            $result->add($this->createExchangeResult($bestPath));
         }
 
         return $result;
