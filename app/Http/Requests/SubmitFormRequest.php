@@ -29,23 +29,21 @@ class SubmitFormRequest extends FormRequest
             'currency_in' => [
                 'required',
                 'exists:' . Currency::class . ',ticker',
+                'different:currency_out',
             ],
             'currency_out' => [
                 'required',
                 'exists:' . Currency::class . ',ticker',
+                'different:currency_in',
             ],
             'amount' => [
                 'required',
                 'numeric',
                 'min:0',
             ],
-            'source' => [
+            'deal' => [
                 'required',
-                Rule::in(array_keys(config('exchange.sources'))),
-            ],
-            'method' => [
-                'required',
-                Rule::in(array_keys(config('exchange.methods'))),
+                Rule::in(config('exchange.deals')),
             ],
         ];
     }

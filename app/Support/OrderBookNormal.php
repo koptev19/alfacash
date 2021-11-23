@@ -13,14 +13,18 @@ class OrderBookNormal extends OrderBook
     }
 
     /**
+     * @return string
+     */
+    public function costOriginalText(): string
+    {
+        return $this->bids[0][0] . ' '. $this->tickerFrom . '/' . $this->tickerTo;
+    }
+
+    /**
      * @return float
      */
     public function amount(): float
     {
-        if(empty($this->bids[0]))
-        {
-            dd($this);
-        }
         return $this->bids[0][1];
     }
 
@@ -29,9 +33,9 @@ class OrderBookNormal extends OrderBook
      */
     public function decreaseAmount(float $minus)
     {
-        $this->bids[0][1] -= $minus / $this->cost();
+        $this->bids[0][1] -= $this->roundByLotStep($minus / $this->cost());
 
-        if($this->bids[0][1] < pow(10, -7)) {
+        if($this->bids[0][1] < 2*$this->lotStep) {
             array_shift($this->bids);
         }
     }
@@ -52,5 +56,15 @@ class OrderBookNormal extends OrderBook
     public function canExchange(): bool
     {
         return !empty($this->bids[0]);
+    }
+
+    /**
+     * @param float $oldAmount
+     *
+     * @return float
+     */
+    public function decreasedAmount(float $amount): float
+    {
+        return $this->roundByLotStep($amount / $this->cost());
     }
 }

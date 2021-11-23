@@ -31,6 +31,6 @@ abstract class BaseFinder implements FinderContract
      *
      * @return ExchangePath
      */
-    abstract public function run(string $currencyIn, string $currencyOut): ExchangePath;
+    abstract public function run(string $currencyIn, string $currencyOut): ?ExchangePath;
 
 }

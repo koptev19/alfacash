@@ -17,6 +17,16 @@ class ExchangeResult extends Collection
     public $finishAmount;
 
     /**
+     * @var ExchangeStep
+     */
+    public $directExchange;
+
+    /**
+     * @var Collection
+     */
+    public $badResults;
+
+    /**
      * @param string $tickerFrom
      * @param string $tickerTo
      * @param float $amountFrom
@@ -25,9 +35,9 @@ class ExchangeResult extends Collection
      *
      * @return void
      */
-    public function addStep(string $tickerFrom, string $tickerTo, float $amountFrom, float $amountTo, float $comission)
+    public function addStep(string $tickerFrom, string $tickerTo, array $params)
     {
-        $this->add(new ExchangeStep($tickerFrom, $tickerTo, $amountFrom, $amountTo, $comission));
+        $this->add(new ExchangeStep($tickerFrom, $tickerTo, $params));
     }
 
     /**
@@ -37,6 +47,42 @@ class ExchangeResult extends Collection
     {
         $this->startAmount = $this->first()->amountFrom;
         $this->finishAmount = $this->last()->amountTo;
+    }
+
+    /**
+     * @param OrderBook|null $orderBook
+     * @param string $currencyFrom
+     * @param string $currencyTo
+     * @param float $amount
+     *
+     * @return void
+     */
+    public function addDirectExchange(?OrderBook $orderBook, string $currencyFrom, string $currencyTo, float $amount)
+    {
+        if($orderBook) {
+            $amountTo = $orderBook->roundByLotStep($amount * $orderBook->cost());
+
+            $this->directExchange = new ExchangeStep($currencyFrom, $currencyTo, [
+                'amountFrom' => $amount,
+                'amountTo' => $amountTo,
+                'comission' => $orderBook->comission($amountTo),
+                'price' => $orderBook->costOriginalText(),
+            ]);
+        }
+    }
+
+    /**
+     * @param ExchangeResult $exchangeResult
+     *
+     * @return void
+     */
+    public function addBadResult(ExchangeResult $exchangeResult)
+    {
+        if(empty($this->badResults)) {
+            $this->badResults = collect();
+        }
+
+        $this->badResults->add($exchangeResult);
     }
 
 }

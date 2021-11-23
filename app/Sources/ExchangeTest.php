@@ -218,7 +218,17 @@ class ExchangeTest implements ExchangeSourceContract
                 'id' => $id,
                 'lowercaseId' => strtolower($id),
                 'symbol' => $symbol,
-                'taker' => 0.001
+                'taker' => 0.001,
+                'info' => [
+                    'filters' => [
+                        [
+                            "filterType" => "LOT_SIZE",
+                            "minQty" => 0.001,
+                            "maxQty" => 1000.00000000,
+                            "stepSize" => 0.001
+                        ]
+                    ]
+                ]
             ];
         }
 

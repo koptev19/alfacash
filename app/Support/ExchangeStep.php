@@ -37,13 +37,18 @@ class ExchangeStep
      */
     public $comission;
 
-    public function __construct(string $tickerFrom, string $tickerTo, float $amountFrom, float $amountTo, float $comission)
+    /**
+     * @var float
+     */
+    public $price;
+
+    public function __construct(string $tickerFrom, string $tickerTo, array $params)
     {
+        foreach($params as $key => $val) {
+            $this->$key = $val;
+        }
         $this->currencyFrom = self::getCurrency($tickerFrom);
         $this->currencyTo = self::getCurrency($tickerTo);
-        $this->amountFrom = $amountFrom;
-        $this->amountTo = $amountTo;
-        $this->comission = $comission;
     }
 
     /**

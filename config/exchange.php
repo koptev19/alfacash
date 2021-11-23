@@ -33,5 +33,12 @@ return [
         ],
     ],
 
-    'default_method' => env('DEFAULT_METHOD', 'direct'),
+    'default_method' => env('DEFAULT_METHOD', 'dijktra'),
+
+    'deals' => [
+        'direct',
+        'reverse',
+    ],
+
+    'bad_paths' => 4,
 ];

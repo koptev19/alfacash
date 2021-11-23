@@ -20,6 +20,11 @@ abstract class OrderBook
     protected $fee;
 
     /**
+     * @var float
+     */
+    protected $lotStep;
+
+    /**
      * @var array
      */
     protected $bids;
@@ -29,11 +34,21 @@ abstract class OrderBook
      */
     protected $asks;
 
-    public function __construct(string $tickerFrom, string $tickerTo, float $fee)
+    public function __construct(string $tickerFrom, string $tickerTo, array $params)
     {
         $this->tickerFrom = $tickerFrom;
         $this->tickerTo = $tickerTo;
-        $this->fee = $fee;
+        $this->fee = $params['fee'] ?? 0;
+        $this->lotStep = pow(10, -7);
+
+        $info = $params['info'] ?? [];
+        if(!empty($info['filters'])) {
+            $filters = collect($info['filters']);
+            $lotFilter = $filters->firstWhere('filterType', "LOT_SIZE");
+            if(!empty($lotFilter)) {
+                $this->lotStep = $lotFilter['stepSize'] ?? 0;
+            }
+        }
     }
 
     /**
@@ -74,9 +89,25 @@ abstract class OrderBook
     }
 
     /**
+     * @param float $amount
+     *
+     * @return float
+     */
+    public function roundByLotStep(float $amount): float
+    {
+        return $amount;
+        return floor($amount / $this->lotStep) * $this->lotStep;
+    }
+
+    /**
      * @return float
      */
     abstract public function costOriginal(): float;
+
+    /**
+     * @return string
+     */
+    abstract public function costOriginalText(): string;
 
     /**
      * @return float
@@ -99,4 +130,11 @@ abstract class OrderBook
      * @return bool
      */
     abstract public function canExchange(): bool;
+
+    /**
+     * @param float $oldAmount
+     *
+     * @return float
+     */
+    abstract public function decreasedAmount(float $amount): float;
 }

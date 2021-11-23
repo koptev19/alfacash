@@ -27,9 +27,12 @@ class IndexController extends Controller
      */
     public function exchange(SubmitFormRequest $request, ExchangeService $changeService)
     {
-        $exchangePaths = $changeService->setSource($request->source)
-            ->setMethod($request->method)
-            ->setExchangeData($request->currency_in, $request->currency_out, $request->amount)
+        $currencyIn = $request->deal === 'direct' ? $request->currency_in : $request->currency_out;
+        $currencyOut = $request->deal === 'direct' ? $request->currency_out : $request->currency_in;
+
+        $exchangePaths = $changeService->setSource(config('exchange.default_source'))
+            ->setMethod(config('exchange.default_method'))
+            ->setExchangeData($currencyIn, $currencyOut, $request->amount)
             ->findPaths();
 
         $exchangePaths->each(function(ExchangeResult $exchangeResult) {
@@ -38,6 +41,6 @@ class IndexController extends Controller
 
         $currencies = Currency::all();
 
-        return view('public.exchange', compact('currencies', 'exchangePaths'));
+        return view('public.exchange', compact('currencies', 'exchangePaths', 'currencyIn', 'currencyOut'));
     }
 }

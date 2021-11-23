@@ -13,6 +13,14 @@ class OrderBookReverse extends OrderBook
     }
 
     /**
+     * @return string
+     */
+    public function costOriginalText(): string
+    {
+        return $this->asks[0][0] . ' '. $this->tickerTo . '/' . $this->tickerFrom;
+    }
+
+    /**
      * @return float
      */
     public function amount(): float
@@ -27,7 +35,7 @@ class OrderBookReverse extends OrderBook
     {
         $this->asks[0][1] -= $minus;
 
-        if($this->asks[0][1] < pow(10, -7)) {
+        if($this->asks[0][1] < 10*$this->lotStep) {
             array_shift($this->asks);
         }
     }
@@ -48,6 +56,16 @@ class OrderBookReverse extends OrderBook
     public function canExchange(): bool
     {
         return !empty($this->asks[0]);
+    }
+
+    /**
+     * @param float $oldAmount
+     *
+     * @return float
+     */
+    public function decreasedAmount(float $amount): float
+    {
+        return $amount / $this->cost();
     }
 
 }

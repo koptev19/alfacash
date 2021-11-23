@@ -21,6 +21,6 @@ interface FinderContract
      *
      * @return ExchangePath
      */
-    public function run(string $currencyIn, string $currencyOut): ExchangePath;
+    public function run(string $currencyIn, string $currencyOut): ?ExchangePath;
 
 }

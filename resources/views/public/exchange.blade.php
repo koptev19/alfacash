@@ -1,14 +1,14 @@
 @extends('layouts.public')
 
 @section('content')
-    <div class="container">
+    <div class="px-10">
         @include('public.__form')
 
 
         <div class="mt-10 text-2xl font-weight pb-5">Результат работы</div>
         <div class="mb-20 flex flex-col gap-3">
-            <div>Потрачено: {{ $exchangePaths->sum('startAmount') }} {{ request('currency_in') }}</div>
-            <div>Получено: {{ round($exchangePaths->sum('finishAmount'), 2) }} {{ request('currency_out') }}</div>
+            <div>Продано: {{ $exchangePaths->sum('startAmount') }} {{ $currencyIn }}</div>
+            <div>Куплено: {{ round($exchangePaths->sum('finishAmount'), 2) }} {{ $currencyOut }}</div>
         </div>
 
         <div class="mt-20 text-2xl font-weight pb-10">Пути обмена</div>
@@ -16,8 +16,11 @@
             <thead>
                 <tr>
                     <th>Номер</th>
-                    <th>Путь обмена</th>
-                    <th>Итого</th>
+                    <th>Лучший обмен</th>
+                    <th>Прямой обмен</th>
+                    @for($i = 1; $i <= config('exchange.bad_paths'); $i++)
+                        <th>Плохой обмен {{ $i }}</th>
+                    @endfor
                 </tr>
             </thead>
             <tbody>
@@ -25,20 +28,21 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>
-                        <div class="flex flex-col gap-5">
-                            @foreach($path as $step)
-                                <div>
-                                    {{ $step->amountFrom . ' ' . $step->currencyFrom->ticker }} =>
-                                    {{ $step->amountTo . ' ' . $step->currencyTo->ticker }}
-                                    <span class="text-xs text-gray-400">({{ number_format($step->comission, 10, '.', ' ') }} {{ $step->currencyTo->ticker }})</span>
-                                </div>
-                            @endforeach
-                        </div>
+                        @include('public.__cell_path')
                     </td>
+
                     <td>
-                        {{ $path->first()->amountFrom . ' ' . $path->first()->currencyFrom->ticker }} =>
-                        {{ $path->last()->amountTo . ' ' . $path->last()->currencyTo->ticker }}
+                        @if($path->directExchange)
+                            @include('public.__step', ['step' => $path->directExchange])
+                        @else
+                            -
+                        @endif
                     </td>
+                    @foreach($path->badResults as $badPath)
+                    <td>
+                        @include('public.__cell_path', ['path' => $badPath])
+                    </td>
+                    @endforeach
                 </tr>
             @endforeach
             </tbody>
